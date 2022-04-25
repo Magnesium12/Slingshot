@@ -253,12 +253,18 @@ function draw() {
       if(d<astar.radius+aship.radius & astar.rcolls>0 & astar.bcolls>0){
         if(aship instanceof RedShips){
           astar.rcolls-=1;
+          aship.mass=0;
+          aship.vx=0;
+          aship.vy=0;
           if(astar.rcolls==0){
             astar.color="red"
           }
         }
         else if(aship instanceof BlueShips){
           astar.bcolls-=1;
+          aship.mass=0;
+          aship.vx=0;
+          aship.vy=0;
           if(astar.bcolls==0){
             astar.color="blue"
           }
@@ -309,7 +315,7 @@ window.addEventListener("keyup", keyEventLogger);
 window.addEventListener("keydown", function(e) {
   if(e.key==="Enter" && !redLast.moving){
       RedShips.rships[RedShips.rships.length-1].moving=true
-      new RedShips()
+      RedShips.rships.push(new RedShips())
       raf = window.requestAnimationFrame(draw);
   }
     // if(!moving){
@@ -324,7 +330,7 @@ window.addEventListener("keydown", function(e) {
 window.addEventListener("keydown", function(e) {
   if(e.key===" " && !bluLast.moving){
     BlueShips.bships[BlueShips.bships.length-1].moving=true
-    new BlueShips()
+    BlueShips.bships.push(new BlueShips())
     raf = window.requestAnimationFrame(draw);
   }
 });
