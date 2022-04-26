@@ -47,6 +47,7 @@ class Ships{
     ctx.fillStyle = this.color;
     ctx.fill();
     ctx.beginPath();
+    // ctx.fillText("vx= "+`${lastRed.vx}`+"\n"+"vy= "+`${lastRed.vy}`,10,50)
     ctx.moveTo(this.x,this.y);
     ctx.lineWidth=3;
     ctx.lineTo(this.x+10*this.vx,this.y+10*this.vy);
@@ -69,6 +70,7 @@ class RedShips extends Ships{
   vx=-1.5;
   vy=0;
   moving=false;
+  landed=false;
   theta=-Math.PI;
   color="red"
   constructor(){
@@ -83,6 +85,7 @@ class BlueShips extends Ships{
   vx=1.5;
   vy=0;
   moving=false;
+  landed=false;
   theta=0;
   color="blue"
   constructor(){
@@ -124,9 +127,43 @@ class BlueShips extends Ships{
 var star1 = new Star(600,250,10,10,3);
 var star2 = new Star(500,250,10,20,2);
 //var planet2 = new Ships(500,150,5,10);
+for (let i = 0; i < 10; i++) {
+  new RedShips()
+  new BlueShips()
+}
+// var rship1 = new RedShips()
+// var bship1 = new BlueShips()
 
-var rship1 = new RedShips()
-var bship1 = new BlueShips()
+function firstNonMoving(shipList){
+  for (let i = 0; i < shipList.length; i++) {
+    if(! shipList[i].moving){
+      return shipList[i]
+    }
+  }
+  return null
+}
+
+function firstNonMovingIndex(shipList){
+  for (let i = 0; i < shipList.length; i++) {
+    if(! shipList[i].moving){
+      return i
+    }
+  }
+  return shipList.length-1
+}
+
+function lastMoving(shipList){
+  if(! shipList[0].moving){
+    return null
+  }
+  for (let i = 1; i < shipList.length; i++) {
+    if(! shipList[i].moving){
+      return shipList[i-1]
+    }
+  }
+  return shipList[shipList.length-1]
+}
+
 
 function Fx(cel_obj,theship){
   netFx=0;
@@ -144,7 +181,7 @@ function Fy(cel_obj,theship){
   })
   return netFy;
 }
-var rho = 0.1;
+var rho = 0;
 function Fvx(theship){
   return -rho*theship.vx;
 }
@@ -179,55 +216,76 @@ function draw() {
     // let lastBlu;
     // let redV;
     // let bluV;
-    lastRed = RedShips.rships[RedShips.rships.length-1]
-    lastBlu = BlueShips.bships[BlueShips.bships.length-1]
-    redV = Math.sqrt(lastRed.vx**2+lastRed.vy**2)
-    bluV = Math.sqrt(lastBlu.vx**2+lastBlu.vy**2)
-    if(! lastRed.moving){
-      if(keyState[1]){
-        lastRed.theta -= 1;
-        //alert('up arrow')
+    lastRed = firstNonMoving(RedShips.rships)
+    lastBlu = firstNonMoving(BlueShips.bships)
+    if(lastRed!=null & lastBlu!=null){
+
+      redV = Math.sqrt(lastRed.vx**2+lastRed.vy**2)
+      bluV = Math.sqrt(lastBlu.vx**2+lastBlu.vy**2)
+      if(! lastRed.moving){
+        if(keyState[1]){
+          lastRed.theta -= 1;
+          //alert('up arrow')
+        }
+        if(keyState[2]){
+          lastRed.theta += 1;
+          //alert('down arrow')
+        }
+        if(keyState[5]){
+          redV += 0.5;
+        }
+        if(keyState[6]){
+          redV -= 0.5;
+        }
+        lastRed.vx = Math.cos((Math.PI/180)*lastRed.theta)*redV;
+        lastRed.vy = -Math.sin((Math.PI/180)*lastRed.theta)*redV;
       }
-      if(keyState[2]){
-        lastRed.theta += 1;
-        //alert('down arrow')
+      if(! lastBlu.moving){
+        if(keyState[3]){
+          lastBlu.theta += 1;
+        }
+        if(keyState[4]){
+          lastBlu.theta -= 1;
+        }
+        if(keyState[7]){
+          bluV -= 0.5;
+        }
+        if(keyState[8]){
+          bluV += 0.5;
+        }
+        lastBlu.vx = Math.cos((Math.PI/180)*lastBlu.theta)*bluV;
+        lastBlu.vy = -Math.sin((Math.PI/180)*lastBlu.theta)*bluV;
       }
-      if(keyState[5]){
-        redV += 0.5;
-      }
-      if(keyState[6]){
-        redV -= 0.5;
-      }
-      lastRed.vx = Math.cos((Math.PI/180)*lastRed.theta)*redV;
-      lastRed.vy = -Math.sin((Math.PI/180)*lastRed.theta)*redV;
-    }
-    if(! lastBlu.moving){
-      if(keyState[3]){
-        lastBlu.theta += 1;
-      }
-      if(keyState[4]){
-        lastBlu.theta -= 1;
-      }
-      if(keyState[7]){
-        bluV -= 0.5;
-      }
-      if(keyState[8]){
-        bluV += 0.5;
-      }
-      lastBlu.vx = Math.cos((Math.PI/180)*lastBlu.theta)*bluV;
-      lastBlu.vy = -Math.sin((Math.PI/180)*lastBlu.theta)*bluV;
     }
     
     
     
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    RedShips.rships.forEach(function(redship){
-      redship.draw()
+    // ctx.fillText("vx= "+`${lastRed.vx}`+"\n"+"vy= "+`${lastRed.vy}`,10,50)
+    // ctx.fillText("vx= "+`${lastBlu.vx}`+"\n"+"vy= "+`${lastBlu.vy}`,10,50)
+    // RedShips.rships.forEach(function(redship){
+    //   redship.draw()
+    // })
+    // BlueShips.bships.forEach(function(blueship){
+    //   blueship.draw()
+    // })
+    Ships.ships.forEach(function(theship){
+      theship.draw();
+      if(theship.y<0){
+        theship.y=canvas.height
+      }
+      else if(theship.y>canvas.height){
+        theship.y=0
+      }
+      if(theship.x<0){
+        theship.x=canvas.width
+      }
+      else if(theship.x>canvas.width){
+        theship.x=0
+      }
+
     })
-    BlueShips.bships.forEach(function(blueship){
-      blueship.draw()
-    })
-    ctx.fillText(RedShips.rships.length+" "+BlueShips.bships.length,10,10)
+    ctx.fillText((RedShips.rships.length-firstNonMovingIndex(RedShips.rships))+" "+(BlueShips.bships.length-firstNonMovingIndex(BlueShips.bships)),10,20)
     //c=0.1
   
   RedShips.rships.forEach(function(aship){
@@ -277,7 +335,7 @@ function draw() {
     astar.draw()
     Ships.ships.forEach(function(aship){
       d=Math.sqrt(((astar.x-aship.x)**2+(astar.y-aship.y)**2));
-      if(d<astar.radius+aship.radius & aship.moving){
+      if(d<astar.radius+aship.radius & ! aship.landed){
         if(aship instanceof RedShips  & astar.bcolls>0 & astar.rcolls>0){
           astar.rcolls-=1;
           //console.log("red hit"+astar.rcolls+" "+astar.bcolls+" vx="+aship.vx+" vy="+aship.vy)
@@ -291,24 +349,13 @@ function draw() {
         aship.mass=0;
         aship.vx=0;
         aship.vy=0;
-        aship.moving=false
+        aship.landed=true
         //console.log("red hit"+astar.rcolls+" "+astar.bcolls+" vx="+aship.vx+" vy="+aship.vy)
       }
     })
   })
 
-  // if(theship.y<0){
-  //   theship.y=canvas.height
-  // }
-  // else if(theship.y>canvas.height){
-  //   theship.y=0
-  // }
-  // if(theship.x<0){
-  //   theship.x=canvas.width
-  // }
-  // else if(theship.x>canvas.width){
-  //   theship.x=0
-  // }
+  
 
   // Star.stars.forEach(function(obj){
   //   let d=Math.sqrt(((obj.x-theship.x)**2+(obj.y-theship.y)**2));
@@ -332,16 +379,16 @@ var keyState = [];
 var keyCodes = {"ArrowUp":1,"ArrowDown":2,"w":3,"s":4,"ArrowLeft":5,"ArrowRight":6,"a":7,"d":8}
 
 // create a logging function
-const keyEventLogger =  function (e) {  keyState[keyCodes[e.key.toString()]] = e.type == 'keydown';  }
+const keyEventLogger =  function (e) {  keyState[keyCodes[e.key.toString()]] = e.type == 'keydown'; console.log(e.key+" was triggerred") }
 window.addEventListener("keydown", keyEventLogger);
 window.addEventListener("keyup", keyEventLogger);
 
 window.addEventListener("keydown", function(e) {
-  if(e.key==="Enter"){
-      RedShips.rships[RedShips.rships.length-1].moving=true
+  if(e.key==="Enter" & firstNonMoving(RedShips.rships)!=null){
+      firstNonMoving(RedShips.rships).moving=true
       //RedShips.rships[RedShips.rships.length]=new RedShips()
       //Object.create(new RedShips())
-      new RedShips()
+      //new RedShips()
       raf = window.requestAnimationFrame(draw);
   }
     // if(!moving){
@@ -354,10 +401,12 @@ window.addEventListener("keydown", function(e) {
   // }
 });
 window.addEventListener("keydown", function(e) {
-  if(e.key===" "){
-    BlueShips.bships[BlueShips.bships.length-1].moving=true
+  if(e.key===" " & firstNonMoving(BlueShips.bships)!=null){
+    firstNonMoving(BlueShips.bships).moving=true
+    //console.log(BlueShips.bships[BlueShips.bships.length-1].vx+" "+BlueShips.bships[BlueShips.bships.length-1].vy)
     //BlueShips.bships.push(new BlueShips())
-    new BlueShips()
+    //new BlueShips()
+    //console.log(BlueShips.bships[BlueShips.bships.length-1].vx+" "+BlueShips.bships[BlueShips.bships.length-1].vy)
     raf = window.requestAnimationFrame(draw);
   }
 });
@@ -549,12 +598,14 @@ window.addEventListener("keypress", function(e) {
 // ctx.fillText(U(cel_obj,theship),100,60)
 // ctx.fillText(K(theship),100,70)
 ctx.clearRect(0, 0, canvas.width, canvas.height)
+var lastRed = firstNonMoving(RedShips.rships)
+var lastBlu = firstNonMoving(BlueShips.bships)
+// ctx.fillText("vx= "+`${lastRed.vx}`+"\n"+"vy= "+`${lastRed.vy}`,10,50)
+// ctx.fillText("vx= "+`${lastBlu.vx}`+"\n"+"vy= "+`${lastBlu.vy}`,10,50)
 //theship.draw()
 Ships.ships.forEach(function(theship){
   theship.draw()
 })
-var lastRed = RedShips.rships[RedShips.rships.length-1]
-var lastBlu = BlueShips.bships[BlueShips.bships.length-1]
 ctx.beginPath();
 ctx.moveTo(lastRed.x,lastRed.y);
 ctx.lineWidth=0.5;
@@ -572,7 +623,7 @@ ctx.stroke();
 cel_obj.forEach(function(obj){
   obj.draw()
 })
-ctx.fillText(RedShips.rships.length+" "+BlueShips.bships.length,10,10)
+ctx.fillText((RedShips.rships.length-firstNonMovingIndex(RedShips.rships))+" "+(BlueShips.bships.length-firstNonMovingIndex(BlueShips.bships)),10,20)
 ctx.closePath();
 window.requestAnimationFrame(draw);
 //planet3.draw()
