@@ -31,8 +31,10 @@ class Planet {
     ctx.strokeStyle = this.color;
     ctx.stroke();
     ctx.font = `${this.radius}px serif`
-    ctx.fillStyle = "black"
-    ctx.fillText(this.rcolls + " " + this.bcolls, this.x - this.radius / 2, this.y + this.radius / 4)
+    ctx.fillStyle = "blue"
+    ctx.fillText(this.bcolls, this.x - 3*this.radius / 4, this.y + this.radius / 4)
+    ctx.fillStyle = "red"
+    ctx.fillText(this.rcolls, this.x + this.radius / 4, this.y + this.radius / 4)
     ctx.closePath();
     ctx.restore()
   }
@@ -278,7 +280,11 @@ function draw() {
     }
 
   })
-  ctx.fillText((RedShips.rships.length - firstNonMovingIndex(RedShips.rships)) + " " + (BlueShips.bships.length - firstNonMovingIndex(BlueShips.bships)), 10, 20)
+  ctx.font = "30px"
+  ctx.fillStyle = "blue"
+  ctx.fillText((BlueShips.bships.length - firstNonMovingIndex(BlueShips.bships)), 10, 40)
+  ctx.fillStyle = "red"
+  ctx.fillText((RedShips.rships.length - firstNonMovingIndex(RedShips.rships)), 860, 40)
   //c=0.1
 
   RedShips.rships.forEach(function (aship) {
@@ -589,7 +595,11 @@ ctx.beginPath();
 cel_obj.forEach(function (obj) {
   obj.draw()
 })
-ctx.fillText((RedShips.rships.length - firstNonMovingIndex(RedShips.rships)) + " " + (BlueShips.bships.length - firstNonMovingIndex(BlueShips.bships)), 10, 20)
+ctx.font = "30px serif"
+ctx.fillStyle = "blue"
+ctx.fillText((BlueShips.bships.length - firstNonMovingIndex(BlueShips.bships)), 10, 40)
+ctx.fillStyle = "red"
+ctx.fillText((RedShips.rships.length - firstNonMovingIndex(RedShips.rships)), 860, 40)
 ctx.closePath();
 //window.requestAnimationFrame(draw);
 //planet3.draw()
